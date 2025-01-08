@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: Virtual
+    env: python
+    region: oregon  # Adjust as per your location
+    plan: free
+    buildCommand: |
+      apt-get update && apt-get install -y curl apt-transport-https
+      curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+      curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/msprod.list
+      apt-get update && apt-get install -y mssql-tools unixodbc-dev
+      pip install -r requirements.txt
+    startCommand: gunicorn app:app --workers=2 --timeout=120
+    healthCheckPath: /
+    autoDeploy: true
