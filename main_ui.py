@@ -1,11 +1,10 @@
 import streamlit as st
 from streamlit_extras.add_vertical_space import add_vertical_space
 from main import handle_query
-import speech_recognition as sr
-
-# Configure the page
+ 
+ 
 st.set_page_config(layout="wide", page_title="Multi-Agent Chat Application")
-
+ 
 # Sidebar Contents
 with st.sidebar:
     st.title("Multi-Agent Chat Application")
@@ -19,13 +18,13 @@ This is a demo of the Multi-Agent concept.
     if st.button("Clear Chat"):
         if "history" in st.session_state:
             st.session_state["history"] = []
-
+ 
 if "history" not in st.session_state:
     st.session_state["history"] = []
-
+ 
 # Main Chat Interface
 st.title("Chat Interface")
-
+ 
 # Display chat history
 history = st.session_state["history"]
 for message in history:
@@ -33,62 +32,44 @@ for message in history:
     content = message["content"]
     with st.chat_message(role):
         st.markdown(content)
-
-# Function to capture voice input
-def capture_voice_input():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("Listening... Please speak into the microphone.")
-        try:
-            audio = recognizer.listen(source, timeout=10)
-            text = recognizer.recognize_google(audio)
-            st.success("You said: " + text)
-            return text
-        except sr.UnknownValueError:
-            st.error("Sorry, could not understand the audio.")
-        except sr.RequestError as e:
-            st.error(f"Could not request results; {e}")
-        except sr.WaitTimeoutError:
-            st.error("Listening timed out.")
-    return None
-
-# Input Section Fixed at the Bottom
-st.markdown(
-    """
-    <style>
-    [data-testid="stVerticalBlock"] {
-        flex-grow: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-end;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-col1, col2 = st.columns([3, 1])
-with col1:
-    user_input = st.chat_input("Type your message here:")
-with col2:
-    if st.button("🎙️ Speak"):
-        voice_input = capture_voice_input()
-        if voice_input:
-            user_input = voice_input
-
-# Function to add an entry to the chat history
-def add_entry(role, content):
-    history.append({"role": role, "content": content})
-    with st.chat_message(role):
-        st.markdown(content)
-
-# Process user input
+ 
+ 
+   
+def add_entry(r,c):
+    if c in user_input:
+        return
+    c = c if 'TERMINATE' not in c else c.replace('TERMINATE','')
+    history.append({"role": r, "content": c})
+    # Display the user's message
+    with st.chat_message(r):
+        st.markdown(c)
+ 
+ 
+#Input for user message
+user_input = st.chat_input("You:")
+ 
 if user_input:
     # Append user's message to the history
-    add_entry("user", user_input)
-
+    history.append({"role": "user", "content": user_input})
+ 
+    # Display the user's message
+    with st.chat_message("user"):
+        st.markdown(user_input)
+ 
+    handle_query(user_input,add_entry)
     # Process the query through the backend
-    handle_query(user_input, add_entry)
-
+    # response = handle_query(user_input,add_entry)
+ 
+    # # Display the assistant's response
+    # if response:
+    #     assistant_message = response
+    #     history.append({"role": "assistant", "content": assistant_message})
+ 
+    #     with st.chat_message("assistant"):
+    #         st.markdown(assistant_message)
+    # else:
+    #     with st.chat_message("assistant"):
+    #         st.markdown("Sorry, I could not process your request.")
+ 
 # Save the updated history
 st.session_state["history"] = history

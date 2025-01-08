@@ -43,7 +43,7 @@ class CustomConversableAgent(ConversableAgent):
        
         # print the message received
         iostream.print(colored(sender.name, "yellow"), "(to", f"{self.name}):\n", flush=True)
-        add_e('assistant',f'{sender.name} (to {self.name}):\n')#101
+        #add_e('assistant',f'{sender.name} (to {self.name}):\n')#101
         message = self._message_to_dict(message)
  
         if message.get("tool_responses"):  # Handle tool multi-call responses
@@ -64,7 +64,7 @@ class CustomConversableAgent(ConversableAgent):
             iostream.print(message["content"], flush=True)
             add_e('assistant',message["content"])#101
             iostream.print(colored("*" * len(func_print), "green"), flush=True)
-            add_e('assistant',"*" * len(func_print))#101
+            #add_e('assistant',"*" * len(func_print))#101
  
         else:
             content = message.get("content")
@@ -92,7 +92,7 @@ class CustomConversableAgent(ConversableAgent):
                 )
                 add_e('assistant',f'Arguments: \n{function_call.get("arguments", "(No arguments found)")}')#101
                 iostream.print(colored("*" * len(func_print), "green"), flush=True)
-                add_e('assistant',"*" * len(func_print))#101
+                #add_e('assistant',"*" * len(func_print))#101
             if "tool_calls" in message and message["tool_calls"]:
                 for tool_call in message["tool_calls"]:#111
                     id = tool_call.get("id", "No tool call id found")
@@ -108,10 +108,10 @@ class CustomConversableAgent(ConversableAgent):
                     )
                     add_e('assistant',f'Arguments: \n{function_call.get("arguments", "(No arguments found)")}')#101
                     iostream.print(colored("*" * len(func_print), "green"), flush=True)
-                    add_e('assistant',"*" * len(func_print))#101
+                    #add_e('assistant',"*" * len(func_print))#101
  
         iostream.print("\n", "-" * 80, flush=True, sep="")
-        add_e('assistant',"-" * 80)#101
+        #add_e('assistant',"-" * 80)#101
  
  
  
